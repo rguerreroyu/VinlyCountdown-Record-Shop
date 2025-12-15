@@ -20,7 +20,7 @@ public class CategoriesController
     private ProductDao productDao;
 
 
-    // create an Autowired controller to inject the categoryDao and ProductDao
+    // create an Autowired controller to inject the categoryDao and ProductDao.
 
     // add the appropriate annotation for a get action
     public List<Category> getAll()
