@@ -25,7 +25,7 @@ public class CategoriesController
     // add the appropriate annotation for a get action
     public List<Category> getAll()
     {
-        // find and return all categories
+        // return and find all categories
         return null;
     }
 
