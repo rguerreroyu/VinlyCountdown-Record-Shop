@@ -5,9 +5,15 @@ import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static org.yearup.data.mysql.MySqlProductDao.mapRow;
 
 @Component
 public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
@@ -18,18 +24,53 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     }
 
     @Override
-    public List<Category> getAllCategories()
-    {
+    public List<Category> getAllCategories() {
         // get all categories
-        return null;
+        {
+            String sql = "SELECT * FROM recordshop.categories"; // make sure schema name matches
+            List<Category> categories = new ArrayList<>();      // create a list to hold all categories
+
+            try (Connection connection = getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(sql);
+
+
+                ResultSet row = statement.executeQuery();
+
+                // Loop through all rows and add to the list
+                while (row.next()) {
+                    categories.add(mapRow(row)); // map each row and add to the list
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            return categories; // return the full list, empty if no rows
+        }
     }
 
     @Override
     public Category getById(int categoryId)
     {
-        // get category by id
+        String sql = "SELECT * FROM recordshop.categories WHERE category_id = ?";
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+
+            ResultSet row = statement.executeQuery();
+
+            if (row.next())
+            {
+                return mapRow(row);
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
         return null;
     }
+
 
     @Override
     public Category create(Category category)
