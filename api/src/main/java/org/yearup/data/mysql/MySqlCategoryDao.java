@@ -3,6 +3,7 @@ package org.yearup.data.mysql;
 import org.springframework.stereotype.Component;
 import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
+import org.yearup.models.Product;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,8 +28,8 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     public List<Category> getAllCategories() {
         // get all categories
         {
-            String sql = "SELECT * FROM recordshop.categories"; // make sure schema name matches
-            List<Category> categories = new ArrayList<>();      // create a list to hold all categories
+            String sql = "SELECT * FROM recordshop.categories";
+            List<Category> categories = new ArrayList<>();
 
             try (Connection connection = getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(sql);
@@ -44,7 +45,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                 throw new RuntimeException(e);
             }
 
-            return categories; // return the full list, empty if no rows
+            return categories;
         }
     }
 
@@ -75,8 +76,36 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category create(Category category)
     {
-        // create a new category
-        return null;
+        String sql = "INSERT INTO recordshop.categories(category_id, name, description) " +
+                    " VALUES (?, ?, ?);";
+
+            try (Connection connection = getConnection())
+            {
+                PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+                statement.setInt(1, category.getCategoryId());
+                statement.setString(2,  category.getName());
+                statement.setString(3, category.getDescription());
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Retrieve the generated keys
+                    ResultSet generatedKeys = statement.getGeneratedKeys();
+
+                    if (generatedKeys.next()) {
+                        // Retrieve the auto-incremented ID
+                        int orderId = generatedKeys.getInt(1);
+
+                        // get the newly inserted category
+                        return getById(orderId);
+                    }
+                }
+            }
+            catch (SQLException e)
+            {
+                throw new RuntimeException(e);
+            }
+            return null;
     }
 
     @Override
@@ -88,7 +117,23 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public void delete(int categoryId)
     {
-        // delete category
+        {
+
+            String sql = "DELETE FROM recordshop.categories " +
+                    " WHERE category_Id = ?;";
+
+            try (Connection connection = getConnection())
+            {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1, categoryId);
+
+                statement.executeUpdate();
+            }
+            catch (SQLException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private Category mapRow(ResultSet row) throws SQLException
