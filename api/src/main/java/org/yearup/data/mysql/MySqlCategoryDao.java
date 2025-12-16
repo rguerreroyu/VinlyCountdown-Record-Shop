@@ -118,6 +118,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                     "   , description = ? " +
                     " WHERE category_id = ?;";
 
+
             try (Connection connection = getConnection())
             {
                 PreparedStatement statement = connection.prepareStatement(sql);
