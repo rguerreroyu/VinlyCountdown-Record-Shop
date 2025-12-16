@@ -32,7 +32,7 @@ public class CategoriesController
         // return and find all categories
         return categoryDao.getAllCategories();
     }
-@GetMapping("")
+@GetMapping("{id}")
     // add the appropriate annotation for a get action
     public Category getById(@PathVariable int id)
     {
