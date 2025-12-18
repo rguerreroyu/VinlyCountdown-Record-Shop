@@ -26,7 +26,6 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
 
     @Override
     public List<Category> getAllCategories() {
-        // get all categories
         {
             String sql = "SELECT * FROM recordshop.categories";
             List<Category> categories = new ArrayList<>();
@@ -37,9 +36,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
 
                 ResultSet row = statement.executeQuery();
 
-                // Loop through all rows and add to the list
+
                 while (row.next()) {
-                    categories.add(mapRow(row)); // map each row and add to the list
+                    categories.add(mapRow(row));
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
